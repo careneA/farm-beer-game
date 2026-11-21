@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farm-to-Shelf Beer Game</title>
+<meta name="description" content="Interactive supply chain simulation: does coordination protect farmers? Runs the real Python model in your browser.">
+<style>
+  :root {
+    --surface: #fcfcfb; --page: #f9f9f7; --ink: #0b0b0b; --ink2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --a: #2a78d6; --b: #eb6834; --demand: #898781; --accent-bg: #eef4fc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface: #1a1a19; --page: #0d0d0d; --ink: #f0efec; --ink2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --a: #3987e5; --b: #d95926; --accent-bg: #16233a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+         font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1120px; margin: 0 auto; padding: 28px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h2 { font-size: 17px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  a { color: var(--a); }
+  .lede { color: var(--ink2); max-width: 760px; }
+  .links { display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0 20px; font-size: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .presets button { border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+                    border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+  .presets button[aria-pressed="true"] { background: var(--accent-bg); border-color: var(--a); }
+  .finding { background: var(--accent-bg); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;
+             font-size: 14px; min-height: 44px; }
+  .layout { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+  .controls label { display: block; font-size: 13px; color: var(--ink2); margin: 12px 0 4px; }
+  .controls label:first-child { margin-top: 0; }
+  .controls select, .controls input[type=number] { width: 100%; padding: 7px 8px; border-radius: 8px;
+         border: 1px solid var(--border); background: var(--page); color: var(--ink); font: inherit; font-size: 14px; }
+  .controls input[type=range] { width: 100%; }
+  .controls label.row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .row output { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink); }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: 0; }
+  .seg { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .seg button { flex: 1; border: 0; background: var(--page); color: var(--ink2); padding: 7px 4px; font: inherit;
+                font-size: 13px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--accent-bg); color: var(--ink); font-weight: 600; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .actions { display: flex; gap: 8px; margin-top: 14px; }
+  .actions button { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border);
+                    background: var(--page); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; }
+  .actions button.primary { background: var(--a); color: #fff; border-color: var(--a); }
+  .actions button:disabled { opacity: 0.5; cursor: wait; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--grid); }
+  th:first-child, td:first-child { text-align: left; }
+  th { font-size: 12px; color: var(--ink2); font-weight: 600; }
+  .better { font-weight: 700; }
+  .charts { display: grid; gap: 16px; margin-top: 16px; }
+  .chart-box { position: relative; height: 260px; }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .chart-head h2 { margin-bottom: 4px; }
+  .chart-sub { font-size: 13px; color: var(--ink2); margin-bottom: 8px; }
+  .toggle { font-size: 13px; color: var(--ink2); }
+  #status { position: fixed; inset: 0; display: grid; place-items: center; background: var(--page); z-index: 10;
+            text-align: center; padding: 16px; }
+  #status.hidden { display: none; }
+  .spinner { width: 28px; height: 28px; border: 3px solid var(--grid); border-top-color: var(--a);
+             border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #busy { font-size: 13px; color: var(--muted); min-height: 20px; }
+  .deals { font-size: 13px; color: var(--ink2); margin-top: 10px; }
+  footer { margin-top: 32px; font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div id="status"><div><div class="spinner"></div>
+  <p><strong>Loading the model…</strong></p>
+  <p class="hint">This page runs the project's real Python code in your browser.<br>The first load takes 10–20 seconds.</p>
+  <p id="status-detail" class="hint"></p></div></div>
+
+<main>
+  <h1>Farm-to-Shelf Beer Game</h1>
+  <p class="lede">A supply chain simulation that starts at the farm: farm → factory → distributor → wholesaler → retailer → customers.
+    Farmers plant once a season, harvests vary, crops spoil and prices swing. Compare two ways of running the chain and see
+    who wins, who loses and who carries the risk.</p>
+  <div class="links">
+    <a href="../REPORT.md">Read the report</a>
+    <a href="../">Code on GitHub</a>
+  </div>
+
+  <div class="presets" id="presets" role="group" aria-label="Findings to explore"></div>
+  <div class="finding" id="finding" aria-live="polite"></div>
+
+  <div class="layout">
+    <section class="card controls" aria-label="Settings">
+      <label for="setupA"><span class="swatch" style="background:var(--a)"></span>Setup A</label>
+      <select id="setupA"></select>
+      <label for="setupB"><span class="swatch" style="background:var(--b)"></span>Setup B</label>
+      <select id="setupB"></select>
+
+      <label>Customer demand</label>
+      <div class="seg" id="demand" role="group" aria-label="Customer demand">
+        <button data-v="noisy" aria-pressed="true">Steady</button>
+        <button data-v="step" aria-pressed="false">Rises 20%</button>
+        <button data-v="spike" aria-pressed="false">Panic buying</button>
+      </div>
+
+      <label for="priceResponse" class="row"><span>Farmers plant for today's price</span><output id="priceResponseOut"></output></label>
+      <input type="range" id="priceResponse" min="0" max="1" step="0.05" value="0.5">
+      <div class="hint">0 = ignore price. Higher = chase high prices harder (the "hog cycle").</div>
+
+      <label for="yieldSd" class="row"><span>Harvest uncertainty</span><output id="yieldSdOut"></output></label>
+      <input type="range" id="yieldSd" min="0" max="0.3" step="0.01" value="0.15">
+
+      <label for="floor" class="row"><span>Contract price floor</span><output id="floorOut"></output></label>
+      <input type="range" id="floor" min="0.4" max="1.4" step="0.05" value="0.8">
+      <label for="upside" class="row"><span>Farmer's share of price rises</span><output id="upsideOut"></output></label>
+      <input type="range" id="upside" min="0" max="1" step="0.1" value="0.5">
+      <div class="hint">These two apply to "Contract: floor + share of upside".</div>
+
+      <label for="farmgate" class="row"><span>Farmgate price, % of market</span><output id="farmgateOut"></output></label>
+      <input type="range" id="farmgate" min="0.3" max="1" step="0.05" value="0.7">
+      <div class="hint">Applies to "Government-set farmgate price".</div>
+
+      <label for="seed">Random run #</label>
+      <input type="number" id="seed" min="0" max="9999" value="1">
+
+      <div class="actions">
+        <button id="reroll">New random run</button>
+        <button id="many" class="primary">Average 30 runs</button>
+      </div>
+      <div id="busy" aria-live="polite"></div>
+    </section>
+
+    <div>
+      <section class="card" aria-label="Results">
+        <h2>Results</h2>
+        <table id="kpis"><thead><tr><th>Measure</th>
+          <th><span class="swatch" style="background:var(--a)"></span>A</th>
+          <th><span class="swatch" style="background:var(--b)"></span>B</th></tr></thead><tbody></tbody></table>
+        <div class="hint" id="kpiNote">One random run. Use "Average 30 runs" for steadier numbers.</div>
+        <div class="deals" id="deals"></div>
+      </section>
+
+      <div class="charts">
+        <section class="card">
+          <div class="chart-head"><h2>What the farm hears</h2>
+            <label class="toggle"><input type="checkbox" id="logScale"> Log scale</label></div>
+          <div class="chart-sub">Factory orders to the farm each week, against real customer demand (gray).</div>
+          <div class="chart-box"><canvas id="ordersChart" aria-label="Factory orders over time"></canvas></div>
+        </section>
+        <section class="card">
+          <h2>Farmgate price</h2>
+          <div class="chart-sub">The market price for crop at the farm gate. 1.0 is a balanced market; it is capped between 0.4 and 3.</div>
+          <div class="chart-box"><canvas id="priceChart" aria-label="Farmgate price over time"></canvas></div>
+        </section>
+        <section class="card">
+          <h2>Farmer's profit each season</h2>
+          <div class="chart-sub">Sales minus growing costs, per 26-week season. Below zero is a losing season.</div>
+          <div class="chart-box"><canvas id="incomeChart" aria-label="Farmer profit per season"></canvas></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <footer>A personal research project. Model results, not forecasts: the numbers are illustrative and the
+    assumptions are listed in the report.</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

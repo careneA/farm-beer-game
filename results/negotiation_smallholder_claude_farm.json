@@ -1,0 +1,190 @@
+[
+  {
+    "week": 0,
+    "transcript": [
+      {
+        "round": 0,
+        "who": "factory",
+        "action": "offer",
+        "floor": 0.4,
+        "share": 0.0,
+        "message": null
+      },
+      {
+        "round": 1,
+        "who": "farm",
+        "action": "offer",
+        "floor": 1.2,
+        "share": 0.0,
+        "message": "We value a stable supply relationship. A guaranteed floor of 1.20 secures reliable weekly delivery of 101 units for you all season."
+      },
+      {
+        "round": 2,
+        "who": "factory",
+        "action": "offer",
+        "floor": 1.0,
+        "share": 0.0,
+        "message": null
+      },
+      {
+        "round": 3,
+        "who": "farm",
+        "action": "offer",
+        "floor": 1.1,
+        "share": 0.0,
+        "message": "We're close. A fixed 1.10 gives you guaranteed weekly supply all season with no spot-market sourcing hassle, and it lets us commit our full output to you."
+      },
+      {
+        "round": 4,
+        "who": "factory",
+        "action": "offer",
+        "floor": 1.0,
+        "share": 0.0,
+        "message": null
+      },
+      {
+        "round": 5,
+        "who": "farm",
+        "action": "accept",
+        "floor": 1.0,
+        "share": 0.0,
+        "message": "We accept a fixed price of 1.00 per unit for the season. We look forward to reliable weekly deliveries."
+      }
+    ]
+  },
+  {
+    "week": 26,
+    "transcript": [
+      {
+        "round": 0,
+        "who": "factory",
+        "action": "offer",
+        "floor": 0.4,
+        "share": 0.0,
+        "message": null
+      },
+      {
+        "round": 1,
+        "who": "farm",
+        "action": "offer",
+        "floor": 1.0,
+        "share": 0.5,
+        "message": "A base price of 1.00 works for us, but we'd like to share half of any upside when spot runs above that, since prices have been trending higher lately."
+      },
+      {
+        "round": 2,
+        "who": "factory",
+        "action": "offer",
+        "floor": 1.0,
+        "share": 0.0,
+        "message": null
+      },
+      {
+        "round": 3,
+        "who": "farm",
+        "action": "offer",
+        "floor": 1.05,
+        "share": 0.2,
+        "message": "We're close. A 1.05 floor with a small 20% share of any spot upside gives you price certainty and gives us a fair stake when the market runs high."
+      },
+      {
+        "round": 4,
+        "who": "factory",
+        "action": "offer",
+        "floor": 1.0,
+        "share": 0.2,
+        "message": null
+      },
+      {
+        "round": 5,
+        "who": "farm",
+        "action": "accept",
+        "floor": 1.0,
+        "share": 0.2,
+        "message": "Floor 1.00 with a 0.2 share works for us. We accept and look forward to a good season together."
+      }
+    ]
+  },
+  {
+    "week": 52,
+    "transcript": [
+      {
+        "round": 0,
+        "who": "factory",
+        "action": "offer",
+        "floor": 0.4,
+        "share": 0.0,
+        "message": null
+      },
+      {
+        "round": 1,
+        "who": "farm",
+        "action": "accept",
+        "floor": 0.4,
+        "share": 0.0,
+        "message": "We accept a fixed price of 1.00 per unit for 105 units weekly over the 26-week season. We look forward to a reliable partnership."
+      }
+    ]
+  },
+  {
+    "week": 78,
+    "transcript": [
+      {
+        "round": 0,
+        "who": "factory",
+        "action": "offer",
+        "floor": 0.4,
+        "share": 1.0,
+        "message": null
+      },
+      {
+        "round": 1,
+        "who": "farm",
+        "action": "offer",
+        "floor": 0.9,
+        "share": 0.5,
+        "message": "Spot has been weak lately, and we need protection against a bad season to commit our full output every week. We propose a 0.90 floor with 50% exposure to spot movements, so you still share in the downside when prices dip."
+      },
+      {
+        "round": 2,
+        "who": "factory",
+        "action": "offer",
+        "floor": 0.65,
+        "share": 1.0,
+        "message": null
+      },
+      {
+        "round": 3,
+        "who": "farm",
+        "action": "offer",
+        "floor": 0.8,
+        "share": 0.7,
+        "message": "We're moving toward you: a lower share and a floor of 0.80 cover our growing costs in a weak season and still give you steady supply below the fixed 1.0 price."
+      },
+      {
+        "round": 4,
+        "who": "factory",
+        "action": "offer",
+        "floor": 0.75,
+        "share": 0.9,
+        "message": null
+      },
+      {
+        "round": 5,
+        "who": "farm",
+        "action": "offer",
+        "floor": 0.8,
+        "share": 0.9,
+        "message": "We're close. Keep your 0.9 share and set the floor at 0.80, and we can sign this round."
+      },
+      {
+        "round": 6,
+        "who": "factory",
+        "action": "accept",
+        "floor": 0.8,
+        "share": 0.9,
+        "message": null
+      }
+    ]
+  }
+]
